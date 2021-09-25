@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class AirDrops extends JavaPlugin {
-    private final ConfigUtil configUtil = new ConfigUtil("plugins//TwerionAirDrop//config.yml");
+    private final ConfigUtil configUtil = new ConfigUtil("plugins//AirDrop//config.yml");
     private AirDropMechanic airDropMechanic;
 
     private final List<Location> locations = new ArrayList<>();
