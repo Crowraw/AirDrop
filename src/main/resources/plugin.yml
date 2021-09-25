@@ -1,0 +1,5 @@
+name: AirDrops
+version: 1.0
+main: de.crowraw.airdrops.AirDrops
+commands:
+  airdrop:
