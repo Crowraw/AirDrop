@@ -1,7 +1,7 @@
 package de.crowraw.airdrops;
 
 import de.crowraw.airdrops.airdrop.AirDropFactory;
-import de.crowraw.airdrops.airdrop.AirDropMechanic;
+import de.crowraw.airdrops.airdrop.AirDropInterface;
 import de.crowraw.lib.data.ConfigHelper;
 import de.crowraw.airdrops.command.AirDropCommand;
 
@@ -15,7 +15,7 @@ import java.util.List;
 
 public final class AirDrops extends JavaPlugin {
     private final ConfigHelper configUtil = new ConfigHelper("plugins//AirDrop//config.yml");
-    private AirDropMechanic airDropMechanic;
+    private AirDropInterface airDropMechanic;
 
     private final List<Location> locations = new ArrayList<>();
 
@@ -42,7 +42,7 @@ public final class AirDrops extends JavaPlugin {
         return locations;
     }
 
-    public AirDropMechanic getAirDropMechanic() {
+    public AirDropInterface getAirDropMechanic() {
         return airDropMechanic;
     }
 }

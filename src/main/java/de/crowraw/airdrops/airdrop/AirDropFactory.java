@@ -15,17 +15,16 @@ package de.crowraw.airdrops.airdrop;/*
  */
 
 import de.crowraw.airdrops.AirDrops;
-import org.bukkit.Bukkit;
 
 public class AirDropFactory {
 
 
-    public static AirDropMechanic getAirDropMechanic(String version, AirDrops plugin) {
+    public static AirDropInterface getAirDropMechanic(String version, AirDrops plugin) {
         if (version.contains("1.8")) {
-            return new de.crowraw.airdrops.v1_8.mechanic.AirDropMechanic(plugin);
+            return new de.crowraw.airdrops.v1_8.mechanic.AirDropInterface(plugin);
         }
         if (version.contains("1.17")) {
-            return new de.crowraw.airdrops.v1_17.mechanic.AirDropMechanic(plugin);
+            return new de.crowraw.airdrops.v1_17.mechanic.AirDropInterface(plugin);
         }
         System.out.println("Not supported version!");
         return null;

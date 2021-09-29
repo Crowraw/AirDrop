@@ -17,28 +17,22 @@ package de.crowraw.airdrops.v1_17.entitiy;/*
 
 import de.crowraw.airdrops.AirDrops;
 
-import de.crowraw.airdrops.v1_17.mechanic.AirDropMechanic;
+import de.crowraw.airdrops.airdrop.AirDropComponent;
+import de.crowraw.airdrops.v1_17.mechanic.AirDropInterface;
 import net.minecraft.network.protocol.game.PacketPlayOutExplosion;
-import net.minecraft.network.protocol.game.PacketPlayOutNamedSoundEffect;
-import net.minecraft.resources.MinecraftKey;
-import net.minecraft.sounds.SoundCategory;
-import net.minecraft.sounds.SoundEffect;
 import net.minecraft.world.phys.Vec3D;
 import org.bukkit.*;
 import org.bukkit.block.Chest;
 
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
-import org.bukkit.entity.Firework;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collections;
 import java.util.List;
 
-public class AirDrop {
+public class AirDrop extends AirDropComponent {
 
     private final Location location;
     private final List<ItemStack> itemStacks;
@@ -86,7 +80,7 @@ public class AirDrop {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> location.getBlock().setType(Material.AIR), 20 * 60 * 4);
 
                     String levelUpString = "entity.player.levelup";
-                    AirDropMechanic.playMusicByKey(levelUpString, location);
+                    AirDropInterface.playMusicByKey(levelUpString, location);
 
 
                     Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().b.
@@ -100,19 +94,10 @@ public class AirDrop {
                     return;
                 }
                 if (!antiLag) {
-                    Firework firework = (Firework) fallingBlock.getWorld().spawnEntity(fallingBlock.getLocation().add(0, 1, 0), EntityType.FIREWORK);
-                    FireworkMeta fireworkMeta = firework.getFireworkMeta();
-                    fireworkMeta.addEffect(FireworkEffect.builder()
-                            .withColor(Color.AQUA, Color.RED, Color.ORANGE, Color.BLACK, Color.GREEN, Color.BLACK, Color.LIME)
-                            .flicker(true)
-                            .with(FireworkEffect.Type.BALL_LARGE)
-                            .build());
-                    firework.setFireworkMeta(fireworkMeta);
-                    fireworkMeta.setPower(20);
-                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, firework::detonate, 4);
+                    createFireWork(plugin, fallingBlock);
 
                     String keyAsString = "entity.dragon_fireball.explode";
-                    AirDropMechanic.playMusicByKey(keyAsString, location);
+                    AirDropInterface.playMusicByKey(keyAsString, location);
 
 
                     Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().b.
