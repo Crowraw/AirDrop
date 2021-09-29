@@ -16,6 +16,7 @@ package de.crowraw.airdrops.v1_8.mechanic;/*
 
 import de.crowraw.airdrops.AirDrops;
 import de.crowraw.airdrops.airdrop.AirDropComponent;
+import de.crowraw.airdrops.v1_8.entitiy.AirDrop;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -69,7 +70,8 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
             }
             if (this.timeElapsed >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 10)), "time_till_airdrop"))) {
                 start = false;
-                sendAirDrop(plugin, location, antiLag);
+                new AirDrop(location, prepareItems(plugin)
+                        ,plugin).spawnAirDrop(antiLag);
                 this.timeElapsed = 0;
                 this.location = getRandomLocation(plugin);
             }

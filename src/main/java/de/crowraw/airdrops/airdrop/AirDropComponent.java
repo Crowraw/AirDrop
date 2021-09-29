@@ -15,7 +15,6 @@ package de.crowraw.airdrops.airdrop;/*
  */
 
 import de.crowraw.airdrops.AirDrops;
-import de.crowraw.airdrops.v1_8.entitiy.AirDrop;
 import org.bukkit.*;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.EntityType;
@@ -30,6 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class AirDropComponent {
+    private Location location;
 
     public void createFireWork(AirDrops plugin, FallingBlock fallingBlock) {
         Firework firework = (Firework) fallingBlock.getWorld().spawnEntity(fallingBlock.getLocation().add(0, 1, 0), EntityType.FIREWORK);
@@ -55,7 +55,7 @@ public abstract class AirDropComponent {
         return locations.get(0);
     }
 
-    public void sendAirDrop(AirDrops plugin, Location location, boolean antiLag) {
+    public List<ItemStack> prepareItems(AirDrops plugin) {
 
         List<ItemStack> itemStacks = new ArrayList<>();
 
@@ -69,8 +69,7 @@ public abstract class AirDropComponent {
 
         Collections.shuffle(itemStacks);
         itemStacks = itemStacks.stream().limit(5).collect(Collectors.toList());
-        new AirDrop(location, itemStacks
-                , plugin).spawnAirDrop(antiLag);
+     return itemStacks;
     }
 
     public void groundTouch(AirDrops plugin, FallingBlock fallingBlock, List<ItemStack> itemStacks) {
@@ -92,5 +91,13 @@ public abstract class AirDropComponent {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> location.getBlock().setType(Material.AIR), 20 * 60 * 4);
 
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }
