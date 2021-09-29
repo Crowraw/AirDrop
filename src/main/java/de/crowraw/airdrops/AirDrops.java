@@ -1,9 +1,12 @@
 package de.crowraw.airdrops;
 
+import de.crowraw.airdrops.airdrop.AirDropFactory;
+import de.crowraw.airdrops.airdrop.AirDropMechanic;
 import de.crowraw.lib.data.ConfigHelper;
 import de.crowraw.airdrops.command.AirDropCommand;
-import de.crowraw.airdrops.mechanic.AirDropMechanic;
 
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,8 +24,8 @@ public final class AirDrops extends JavaPlugin {
         // Plugin startup logic
         configUtil.saveConfig();
 
-        airDropMechanic = new AirDropMechanic(this);
         new AirDropCommand(this);
+      airDropMechanic = AirDropFactory.getAirDropMechanic(Bukkit.getVersion(),this);
 
     }
 

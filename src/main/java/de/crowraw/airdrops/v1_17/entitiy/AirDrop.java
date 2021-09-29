@@ -1,4 +1,4 @@
-package de.crowraw.airdrops.entitiy;/*
+package de.crowraw.airdrops.v1_17.entitiy;/*
    _____                                      
  / ____|                                     
 | |     _ __ _____      ___ __ __ ___      __
@@ -16,11 +16,18 @@ package de.crowraw.airdrops.entitiy;/*
 
 
 import de.crowraw.airdrops.AirDrops;
-import net.minecraft.server.v1_8_R3.PacketPlayOutExplosion;
-import net.minecraft.server.v1_8_R3.Vec3D;
+
+import de.crowraw.airdrops.v1_17.mechanic.AirDropMechanic;
+import net.minecraft.network.protocol.game.PacketPlayOutExplosion;
+import net.minecraft.network.protocol.game.PacketPlayOutNamedSoundEffect;
+import net.minecraft.resources.MinecraftKey;
+import net.minecraft.sounds.SoundCategory;
+import net.minecraft.sounds.SoundEffect;
+import net.minecraft.world.phys.Vec3D;
 import org.bukkit.*;
 import org.bukkit.block.Chest;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Firework;
@@ -78,8 +85,11 @@ public class AirDrop {
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> location.getBlock().setType(Material.AIR), 20 * 60 * 4);
 
-                    location.getWorld().playSound(location, Sound.EXPLODE, 1f, 1f);
-                    Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().playerConnection.
+                    String levelUpString = "entity.player.levelup";
+                    AirDropMechanic.playMusicByKey(levelUpString, location);
+
+
+                    Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().b.
                             sendPacket(new PacketPlayOutExplosion(location.getX(),
                                     location.getY(), location.getZ(), 10,
                                     Collections.emptyList(), new Vec3D(0, 0, 0))));
@@ -101,7 +111,14 @@ public class AirDrop {
                     fireworkMeta.setPower(20);
                     Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, firework::detonate, 4);
 
-                    fallingBlock.getWorld().playSound(fallingBlock.getLocation(), Sound.LEVEL_UP, 0.5f, 1f);
+                    String keyAsString = "entity.dragon_fireball.explode";
+                    AirDropMechanic.playMusicByKey(keyAsString, location);
+
+
+                    Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().b.
+                            sendPacket(new PacketPlayOutExplosion(location.getX(),
+                                    location.getY(), location.getZ(), 10,
+                                    Collections.emptyList(), new Vec3D(0, 0, 0))));
                 }
 
             }

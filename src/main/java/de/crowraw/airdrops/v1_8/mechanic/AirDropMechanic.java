@@ -1,4 +1,4 @@
-package de.crowraw.airdrops.mechanic;/*
+package de.crowraw.airdrops.v1_8.mechanic;/*
    _____                                      
  / ____|                                     
 | |     _ __ _____      ___ __ __ ___      __
@@ -15,8 +15,8 @@ package de.crowraw.airdrops.mechanic;/*
  */
 
 import de.crowraw.airdrops.AirDrops;
+import de.crowraw.airdrops.v1_8.entitiy.AirDrop;
 import net.minecraft.server.v1_8_R3.*;
-import de.crowraw.airdrops.entitiy.AirDrop;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AirDropMechanic {
+public class AirDropMechanic implements de.crowraw.airdrops.airdrop.AirDropMechanic {
     private final AirDrops plugin;
 
     private boolean antiLag;
@@ -41,7 +41,7 @@ public class AirDropMechanic {
 
     public AirDropMechanic(AirDrops plugin) {
         this.plugin = plugin;
-        startScheduler();
+
         if (plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("location") == null) {
             plugin.getConfigUtil().loadLocation(99, new Location(Bukkit.getWorld("world"), 1, 1, 1));
         }
@@ -50,7 +50,7 @@ public class AirDropMechanic {
             plugin.getConfigUtil().getYamlConfiguration().set("items.0", new ItemStack(Material.EMERALD));
             plugin.getConfigUtil().saveConfig();
         }
-
+        startScheduler();
     }
 
     private void startScheduler() {
