@@ -16,10 +16,8 @@ package de.crowraw.airdrops.airdrop;/*
 
 import de.crowraw.airdrops.AirDrops;
 import de.crowraw.airdrops.v1_8.entitiy.AirDrop;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
+import org.bukkit.*;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Firework;
@@ -59,9 +57,7 @@ public abstract class AirDropComponent {
 
     public void sendAirDrop(AirDrops plugin, Location location, boolean antiLag) {
 
-
         List<ItemStack> itemStacks = new ArrayList<>();
-
 
         for (int i = 0; i < plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("items").getKeys(false).size(); i++) {
 
@@ -75,5 +71,26 @@ public abstract class AirDropComponent {
         itemStacks = itemStacks.stream().limit(5).collect(Collectors.toList());
         new AirDrop(location, itemStacks
                 , plugin).spawnAirDrop(antiLag);
+    }
+
+    public void groundTouch(AirDrops plugin, FallingBlock fallingBlock, List<ItemStack> itemStacks) {
+        Location location = fallingBlock.getLocation();
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> location.getBlock().setType(Material.CHEST), 20);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            if (location.getBlock().getState() instanceof Chest) {
+                Chest chest = (Chest) location.getBlock().getState();
+                itemStacks.forEach(itemStack -> {
+                    if (itemStack != null)
+                        chest.getInventory().addItem(itemStack);
+                });
+            }
+            plugin.getLocations().add(location);
+        }, 40);
+
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> location.getBlock().setType(Material.AIR), 20 * 60 * 4);
+
     }
 }

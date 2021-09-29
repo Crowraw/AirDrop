@@ -16,15 +16,16 @@ package de.crowraw.airdrops.airdrop;/*
 
 import de.crowraw.airdrops.AirDrops;
 
+
 public class AirDropFactory {
 
 
     public static AirDropInterface getAirDropMechanic(String version, AirDrops plugin) {
         if (version.contains("1.8")) {
-            return new de.crowraw.airdrops.v1_8.mechanic.AirDropInterface(plugin);
+            return new de.crowraw.airdrops.v1_8.mechanic.AirDropMechanic(plugin);
         }
         if (version.contains("1.17")) {
-            return new de.crowraw.airdrops.v1_17.mechanic.AirDropInterface(plugin);
+            return new de.crowraw.airdrops.v1_17.mechanic.AirDropMechanic(plugin);
         }
         System.out.println("Not supported version!");
         return null;

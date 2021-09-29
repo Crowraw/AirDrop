@@ -59,23 +59,7 @@ public class AirDrop extends AirDropComponent {
 
                 if (fallingBlock.isOnGround()) {
 
-                    Location location = fallingBlock.getLocation();
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> location.getBlock().setType(Material.CHEST), 20);
-
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                        if (location.getBlock().getState() instanceof Chest) {
-                            Chest chest = (Chest) location.getBlock().getState();
-                            itemStacks.forEach(itemStack -> {
-                                if (itemStack != null)
-                                    chest.getInventory().addItem(itemStack);
-                            });
-                        }
-                        plugin.getLocations().add(location);
-                    }, 40);
-
-
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> location.getBlock().setType(Material.AIR), 20 * 60 * 4);
-
+                    groundTouch(plugin, fallingBlock, itemStacks);
                     location.getWorld().playSound(location, Sound.EXPLODE, 1f, 1f);
                     Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().playerConnection.
                             sendPacket(new PacketPlayOutExplosion(location.getX(),
@@ -89,7 +73,6 @@ public class AirDrop extends AirDropComponent {
                 }
                 if (!antiLag) {
                     createFireWork(plugin, fallingBlock);
-
                     fallingBlock.getWorld().playSound(fallingBlock.getLocation(), Sound.LEVEL_UP, 0.5f, 1f);
                 }
 

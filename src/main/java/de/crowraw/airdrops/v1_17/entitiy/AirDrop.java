@@ -18,11 +18,10 @@ package de.crowraw.airdrops.v1_17.entitiy;/*
 import de.crowraw.airdrops.AirDrops;
 
 import de.crowraw.airdrops.airdrop.AirDropComponent;
-import de.crowraw.airdrops.v1_17.mechanic.AirDropInterface;
+import de.crowraw.airdrops.v1_17.mechanic.AirDropMechanic;
 import net.minecraft.network.protocol.game.PacketPlayOutExplosion;
 import net.minecraft.world.phys.Vec3D;
 import org.bukkit.*;
-import org.bukkit.block.Chest;
 
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.entity.FallingBlock;
@@ -62,27 +61,11 @@ public class AirDrop extends AirDropComponent {
 
                 if (fallingBlock.isOnGround()) {
 
-                    Location location = fallingBlock.getLocation();
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> location.getBlock().setType(Material.CHEST), 20);
 
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                        if (location.getBlock().getState() instanceof Chest) {
-                            Chest chest = (Chest) location.getBlock().getState();
-                            itemStacks.forEach(itemStack -> {
-                                if (itemStack != null)
-                                    chest.getInventory().addItem(itemStack);
-                            });
-                        }
-                        plugin.getLocations().add(location);
-                    }, 40);
-
-
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> location.getBlock().setType(Material.AIR), 20 * 60 * 4);
-
+                    groundTouch(plugin, fallingBlock, itemStacks);
+                    //creating this because can be changed and incoming packets listener
                     String levelUpString = "entity.player.levelup";
-                    AirDropInterface.playMusicByKey(levelUpString, location);
-
-
+                    AirDropMechanic.playMusicByKey(levelUpString, location);
                     Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().b.
                             sendPacket(new PacketPlayOutExplosion(location.getX(),
                                     location.getY(), location.getZ(), 10,
@@ -95,11 +78,8 @@ public class AirDrop extends AirDropComponent {
                 }
                 if (!antiLag) {
                     createFireWork(plugin, fallingBlock);
-
                     String keyAsString = "entity.dragon_fireball.explode";
-                    AirDropInterface.playMusicByKey(keyAsString, location);
-
-
+                    AirDropMechanic.playMusicByKey(keyAsString, location);
                     Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().b.
                             sendPacket(new PacketPlayOutExplosion(location.getX(),
                                     location.getY(), location.getZ(), 10,

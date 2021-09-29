@@ -35,7 +35,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
 
-public class AirDropInterface extends AirDropComponent implements de.crowraw.airdrops.airdrop.AirDropInterface {
+public class AirDropMechanic extends AirDropComponent implements de.crowraw.airdrops.airdrop.AirDropInterface {
     private final AirDrops plugin;
 
     private boolean antiLag;
@@ -43,7 +43,7 @@ public class AirDropInterface extends AirDropComponent implements de.crowraw.air
     private Location location;
     private boolean start = false;
 
-    public AirDropInterface(AirDrops plugin) {
+    public AirDropMechanic(AirDrops plugin) {
         this.plugin = plugin;
         if (plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("location") == null) {
             plugin.getConfigUtil().loadLocation(99, new Location(Bukkit.getWorld("world"), 1, 1, 1));

@@ -22,7 +22,7 @@ import org.bukkit.entity.Player;
 
 public class AirDropCommand implements CommandExecutor {
 
-    private AirDrops plugin;
+    private final AirDrops plugin;
 
 
     public AirDropCommand(AirDrops plugin) {
@@ -48,17 +48,17 @@ public class AirDropCommand implements CommandExecutor {
                         plugin.getConfigUtil().
                                 getLocationFromId(plugin.getConfigUtil().getYamlConfiguration().
                                         getConfigurationSection("location").getKeys(false).size() + 1, player.getLocation());
-                        sucess(player);
+                        success(player);
                         break;
                     case "additem":
                         plugin.getConfigUtil().getYamlConfiguration().set("items." + (plugin.getConfigUtil().getYamlConfiguration().
                                 getConfigurationSection("items").getKeys(false).size()), player.getItemInHand());
-                        sucess(player);
+                        success(player);
                         break;
                     case "start":
                         plugin.getAirDropMechanic().setTimeElapsed(60*9+28);
                         plugin.getAirDropMechanic().setStart(true);
-                        sucess(player);
+                        success(player);
                         break;
                     case "antilag":
                         plugin.getAirDropMechanic().setAntiLag(!plugin.getAirDropMechanic().isAntiLag());
@@ -86,7 +86,7 @@ public class AirDropCommand implements CommandExecutor {
         player.sendMessage("§c- /airdrop antilag -> No fireworks");
     }
 
-    private void sucess(Player player) {
+    private void success(Player player) {
         player.sendMessage("§2Sucess");
         plugin.getConfigUtil().saveConfig();
     }
