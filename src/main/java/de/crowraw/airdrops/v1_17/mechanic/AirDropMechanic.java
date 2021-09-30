@@ -39,12 +39,9 @@ import java.util.Collections;
 public class AirDropMechanic extends AirDropComponent implements de.crowraw.airdrops.airdrop.AirDropInterface {
     private final AirDrops plugin;
 
-    private boolean antiLag;
-    private int timeElapsed = 0;
-
-    private boolean start = false;
 
     public AirDropMechanic(AirDrops plugin) {
+        super(plugin);
         this.plugin = plugin;
         if (plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("location") == null) {
             plugin.getConfigUtil().loadLocation(99, new Location(Bukkit.getWorld("world"), 1, 1, 1));
@@ -63,27 +60,8 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
 
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
 
-            if (!start) {
-                if (Bukkit.getOnlinePlayers().size() <
-                        Integer.parseInt(plugin.getConfigUtil().getStringMessage("40", "playersrequired"))) {
-                    return;
-                }
-            }
-
-            timeElapsed++;
-            if (timeElapsed == Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))) {
-                Bukkit.getOnlinePlayers().forEach(player ->
-                        player.sendMessage("§4§lWarning: AirDrop coming at: " + getLocation().getX() + "X and " + getLocation().getZ() + " Z. "));
-            }
-            if (this.timeElapsed >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 10)), "time_till_airdrop"))) {
-                start = false;
-                new AirDrop(getLocation(), prepareItems(plugin)
-                        , plugin).spawnAirDrop(antiLag);
-
-                this.timeElapsed = 0;
-                setLocation(getRandomLocation(plugin));
-            }
-            if (timeElapsed >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))) {
+      airDropStartChecker();
+            if (getTimeElapsed() >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))) {
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     String keyAsString = "entity.lightning_bolt.impact";
                     playMusicByKey(keyAsString, getLocation());
@@ -130,18 +108,18 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
 
 
     public void setAntiLag(boolean antiLag) {
-        this.antiLag = antiLag;
+      antiLag(antiLag);
     }
 
     public void setTimeElapsed(int timeElapsed) {
-        this.timeElapsed = timeElapsed;
+        timeElapsed(timeElapsed);
     }
 
     public void setStart(boolean start) {
-        this.start = start;
+        start(start);
     }
 
     public boolean isAntiLag() {
-        return antiLag;
+        return getAntiLag();
     }
 }

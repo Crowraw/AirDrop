@@ -15,6 +15,7 @@ package de.crowraw.airdrops.airdrop;/*
  */
 
 import de.crowraw.airdrops.AirDrops;
+import de.crowraw.airdrops.v1_17.entitiy.AirDrop;
 import org.bukkit.*;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.EntityType;
@@ -30,6 +31,14 @@ import java.util.stream.Collectors;
 
 public abstract class AirDropComponent {
     private Location location;
+    private int timeElapsed = 0;
+    private boolean antiLag;
+    private boolean start = false;
+    private AirDrops plugin;
+
+    public AirDropComponent(AirDrops plugin) {
+        this.plugin = plugin;
+    }
 
     public void createFireWork(AirDrops plugin, FallingBlock fallingBlock) {
         Firework firework = (Firework) fallingBlock.getWorld().spawnEntity(fallingBlock.getLocation().add(0, 1, 0), EntityType.FIREWORK);
@@ -47,29 +56,38 @@ public abstract class AirDropComponent {
     public Location getRandomLocation(AirDrops plugin) {
         List<Location> locations = new ArrayList<>();
         int size = plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("location").getKeys(false).size();
-        for (int i = 0; i < size; i++) {
-            locations.add(plugin.getConfigUtil().getLocationFromId(i));
 
+        int i = 0;
+
+        while (size != locations.size()) {
+            if (plugin.getConfigUtil().getYamlConfiguration().get("location." + i) != null) {
+                locations.add(plugin.getConfigUtil().getLocationFromId(i));
+            }
+            i++;
         }
         Collections.shuffle(locations);
+        if (locations.get(0) == null) {
+            plugin.getLogger().info("The Location is not valid! ID:" + i);
+        }
         return locations.get(0);
     }
 
     public List<ItemStack> prepareItems(AirDrops plugin) {
 
         List<ItemStack> itemStacks = new ArrayList<>();
+        int size = plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("items").getKeys(false).size();
 
-        for (int i = 0; i < plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("items").getKeys(false).size(); i++) {
+        int i = 0;
 
-            if (plugin.getConfigUtil().getYamlConfiguration().get("items." + i) == null) {
-                continue;
+        while (size != itemStacks.size()) {
+            if (plugin.getConfigUtil().getYamlConfiguration().get("items." + i) != null) {
+                itemStacks.add(plugin.getConfigUtil().getYamlConfiguration().getItemStack("items." + i));
             }
-            itemStacks.add(plugin.getConfigUtil().getYamlConfiguration().getItemStack("items." + i));
+            i++;
         }
-
         Collections.shuffle(itemStacks);
-        itemStacks = itemStacks.stream().limit(5).collect(Collectors.toList());
-     return itemStacks;
+        itemStacks = itemStacks.stream().limit(Integer.parseInt(plugin.getConfigUtil().getStringMessage("5", "items_amount_in_chest"))).collect(Collectors.toList());
+        return itemStacks;
     }
 
     public void groundTouch(AirDrops plugin, FallingBlock fallingBlock, List<ItemStack> itemStacks) {
@@ -93,11 +111,79 @@ public abstract class AirDropComponent {
 
     }
 
+    public void sendMessage(AirDrops plugin) {
+
+        String message = plugin.getConfigUtil().getStringMessage(
+                "§4§lWarning: AirDrop coming at: $x$ X and $z$ Z.",
+                "message.send").replace("$x$", "" + getLocation().getX()).replace("$z$", "" + getLocation().getZ());
+
+        Bukkit.getOnlinePlayers().forEach(player ->
+                player.sendMessage(message));
+    }
+
     public Location getLocation() {
         return location;
     }
 
+    public void airDropStartChecker() {
+        if (!start) {
+            if (Bukkit.getOnlinePlayers().size() <
+                    Integer.parseInt(plugin.getConfigUtil().getStringMessage("40", "playersrequired"))) {
+                return;
+            }
+        }
+
+        timeElapsed++;
+        if (timeElapsed == Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))) {
+            sendMessage(plugin);
+        }
+        if (this.timeElapsed >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 10)), "time_till_airdrop"))) {
+            start = false;
+            if (Bukkit.getVersion().contains("1.8")) {
+                new de.crowraw.airdrops.v1_8.entitiy.AirDrop(getLocation(), prepareItems(plugin)
+                        , plugin).spawnAirDrop(antiLag);
+            }
+            if (Bukkit.getVersion().contains("1.17")) {
+                new de.crowraw.airdrops.v1_17.entitiy.AirDrop(getLocation(), prepareItems(plugin)
+                        , plugin).spawnAirDrop(antiLag);
+            }
+            if (Bukkit.getVersion().contains("1.16")) {
+                new de.crowraw.airdrops.v1_16.entitiy.AirDrop(getLocation(), prepareItems(plugin)
+                        , plugin).spawnAirDrop(antiLag);
+            }
+
+
+            this.timeElapsed = 0;
+            setLocation(getRandomLocation(plugin));
+        }
+    }
+
+
+    public int getTimeElapsed() {
+        return timeElapsed;
+    }
+
+    public void timeElapsed(int timeElapsed) {
+        this.timeElapsed = timeElapsed;
+    }
+
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public void antiLag(boolean antiLag) {
+        this.antiLag = antiLag;
+    }
+
+    public void start(boolean start) {
+        this.start = start;
+    }
+
+    public boolean start() {
+        return start;
+    }
+
+    public boolean getAntiLag() {
+        return antiLag;
     }
 }

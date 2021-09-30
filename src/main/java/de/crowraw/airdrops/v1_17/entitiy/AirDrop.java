@@ -38,6 +38,7 @@ public class AirDrop extends AirDropComponent {
     private AirDrops plugin;
 
     public AirDrop(Location location, List<ItemStack> itemStacks, AirDrops plugin) {
+        super(plugin);
         this.location = location;
         this.itemStacks = itemStacks;
         this.plugin = plugin;
@@ -49,7 +50,7 @@ public class AirDrop extends AirDropComponent {
             return;
         }
         location.setY(120);
-
+        location.getChunk().load();
 
         FallingBlock fallingBlock = this.location.getWorld().spawnFallingBlock(this.location, Material.CHEST, (byte) 0);
         fallingBlock.setDropItem(false);

@@ -1,4 +1,4 @@
-package de.crowraw.airdrops.v1_8.mechanic;/*
+package de.crowraw.airdrops.v1_16.mechanic;/*
    _____                                      
  / ____|                                     
 | |     _ __ _____      ___ __ __ ___      __
@@ -16,17 +16,15 @@ package de.crowraw.airdrops.v1_8.mechanic;/*
 
 import de.crowraw.airdrops.AirDrops;
 import de.crowraw.airdrops.airdrop.AirDropComponent;
-import de.crowraw.airdrops.v1_8.entitiy.AirDrop;
-import net.minecraft.resources.MinecraftKey;
-import net.minecraft.server.v1_8_R3.*;
-import net.minecraft.sounds.SoundCategory;
-import net.minecraft.sounds.SoundEffect;
+import de.crowraw.airdrops.v1_16.entitiy.AirDrop;
+
+import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -35,10 +33,10 @@ import java.util.Collections;
 public class AirDropMechanic extends AirDropComponent implements de.crowraw.airdrops.airdrop.AirDropInterface {
     private final AirDrops plugin;
 
+
     public AirDropMechanic(AirDrops plugin) {
         super(plugin);
         this.plugin = plugin;
-
         if (plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("location") == null) {
             plugin.getConfigUtil().loadLocation(99, new Location(Bukkit.getWorld("world"), 1, 1, 1));
         }
@@ -48,6 +46,7 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
             plugin.getConfigUtil().saveConfig();
         }
         startScheduler();
+
     }
 
     private void startScheduler() {
@@ -56,21 +55,31 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
 
             airDropStartChecker();
-            if (getTimeElapsed() >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))) {
 
+            if (getTimeElapsed() >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))) {
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    ((CraftPlayer) onlinePlayer).getHandle().playerConnection.
-                            sendPacket(new PacketPlayOutSpawnEntityWeather(new EntityLightning((((CraftWorld) getLocation().getWorld()).getHandle()),
-                                    getLocation().getX(), getLocation().getY(), getLocation().getZ(),
-                                    false, false)));
+                    String keyAsString = "entity.lightning_bolt.impact";
+                    playMusicByKey(keyAsString, getLocation());
+                    EntityLightning lightning = new EntityLightning(EntityTypes.LIGHTNING_BOLT, ((CraftWorld) getLocation().getWorld()).getHandle());
+
+                    Vec3D vec = new Vec3D(0, 0, 0);
+
+                    PacketPlayOutSpawnEntity lightningPacket = new PacketPlayOutSpawnEntity(lightning.getId(), lightning.getUniqueID(),
+                            getLocation().getX(),
+                            getLocation().getY(),
+                            getLocation().getZ(), 0f, 0f, EntityTypes.LIGHTNING_BOLT, 0, vec);
+
+
+                    ((CraftPlayer) onlinePlayer).getHandle().playerConnection.sendPacket(lightningPacket);
 
                     ((CraftPlayer) onlinePlayer).getHandle().playerConnection.
                             sendPacket(new PacketPlayOutExplosion(getLocation().getX(),
                                     getLocation().getY(), getLocation().getZ(), 10,
                                     Collections.emptyList(), new Vec3D(0, 0, 0)));
 
-                    onlinePlayer.playSound(getLocation(), "random.explode", 1f, 1f);
-
+                    ((CraftPlayer) onlinePlayer).getHandle().playerConnection.
+                            sendPacket(new PacketPlayOutNamedSoundEffect(new SoundEffect(MinecraftKey.a("ambient.weather.thunder")), SoundCategory.WEATHER, getLocation().getX(),
+                                    getLocation().getY(), getLocation().getZ(), 0.00001f, 1f));
 
                 }
 
@@ -79,6 +88,19 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
 
         }, 20, 20);
     }
+
+    public static void playMusicByKey(String keyAsString, Location location) {
+        MinecraftKey key = new MinecraftKey(keyAsString);
+        SoundEffect effect = new SoundEffect(key);
+
+        PacketPlayOutNamedSoundEffect packet;
+        packet = new PacketPlayOutNamedSoundEffect(effect, SoundCategory.PLAYERS,
+                location.getX(),
+                location.getY(),
+                location.getZ(), 1f, 1f);
+        Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet));
+    }
+
 
     public void setAntiLag(boolean antiLag) {
         antiLag(antiLag);
@@ -89,7 +111,7 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
     }
 
     public void setStart(boolean start) {
-        start(start);
+        this.start(start);
     }
 
     public boolean isAntiLag() {

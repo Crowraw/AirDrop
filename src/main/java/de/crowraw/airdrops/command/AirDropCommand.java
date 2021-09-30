@@ -38,6 +38,7 @@ public class AirDropCommand implements CommandExecutor {
             Player player = (Player) commandSender;
             if (strings.length != 1) {
                 syntax(player);
+                return true;
             }
             if (player.hasPermission("airdrop.setup")) {
 
