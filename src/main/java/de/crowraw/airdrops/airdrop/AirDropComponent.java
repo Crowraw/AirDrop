@@ -103,11 +103,11 @@ public abstract class AirDropComponent {
                         chest.getInventory().addItem(itemStack);
                 });
             }
-            plugin.getLocations().add(location);
+            AirDropRepository.getInstance(plugin).addChestLocation(location, plugin);
         }, 40);
 
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> location.getBlock().setType(Material.AIR), 20 * 60 * 4);
+        // TODO: 30.09.2021 AirDropRepo
 
     }
 

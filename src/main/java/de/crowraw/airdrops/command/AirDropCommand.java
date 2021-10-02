@@ -57,13 +57,17 @@ public class AirDropCommand implements CommandExecutor {
                         success(player);
                         break;
                     case "start":
-                        plugin.getAirDropMechanic().setTimeElapsed(60*9+28);
+                        plugin.getAirDropMechanic().setTimeElapsed(Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))-1);
                         plugin.getAirDropMechanic().setStart(true);
                         success(player);
                         break;
                     case "antilag":
                         plugin.getAirDropMechanic().setAntiLag(!plugin.getAirDropMechanic().isAntiLag());
                         player.sendMessage("§aAntiLag is now" + (plugin.getAirDropMechanic().isAntiLag() ? "§2activ" : "§4not active"));
+                        break;
+                    case "reload":
+
+                       success(player);
                         break;
                     default:
                         syntax(player);
@@ -85,6 +89,7 @@ public class AirDropCommand implements CommandExecutor {
         player.sendMessage("§c- /airdrop addItem -> Item in hand");
         player.sendMessage("§c- /airdrop start -> Starts");
         player.sendMessage("§c- /airdrop antilag -> No fireworks");
+        player.sendMessage("§c- /airdrop reload -> Reloads config");
     }
 
     private void success(Player player) {
