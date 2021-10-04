@@ -14,7 +14,7 @@ package de.crowraw.airdrops.airdrop;/*
     
  */
 
-public interface AirDropMechanic {
+public interface AirDropInterface {
     void setAntiLag(boolean antiLag);
 
     void setTimeElapsed(int timeElapsed);

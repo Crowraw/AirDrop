@@ -15,6 +15,7 @@ package de.crowraw.airdrops.v1_17.mechanic;/*
  */
 
 import de.crowraw.airdrops.AirDrops;
+import de.crowraw.airdrops.airdrop.AirDropComponent;
 import de.crowraw.airdrops.v1_17.entitiy.AirDrop;
 import net.minecraft.network.protocol.game.PacketPlayOutExplosion;
 import net.minecraft.network.protocol.game.PacketPlayOutNamedSoundEffect;
@@ -28,26 +29,19 @@ import net.minecraft.world.phys.Vec3D;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
-public class AirDropMechanic implements de.crowraw.airdrops.airdrop.AirDropMechanic {
+public class AirDropMechanic extends AirDropComponent implements de.crowraw.airdrops.airdrop.AirDropInterface {
     private final AirDrops plugin;
 
-    private boolean antiLag;
-    private int timeElapsed = 0;
-    private Location location;
-    private boolean start = false;
 
     public AirDropMechanic(AirDrops plugin) {
+        super(plugin);
         this.plugin = plugin;
         if (plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("location") == null) {
             plugin.getConfigUtil().loadLocation(99, new Location(Bukkit.getWorld("world"), 1, 1, 1));
@@ -62,52 +56,35 @@ public class AirDropMechanic implements de.crowraw.airdrops.airdrop.AirDropMecha
     }
 
     private void startScheduler() {
-        this.location = getRandomLocation();
+        setLocation(getRandomLocation(plugin));
 
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
 
-            if (!start) {
-                if (Bukkit.getOnlinePlayers().size() <
-                        Integer.parseInt(plugin.getConfigUtil().getStringMessage("40", "playersrequired"))) {
-                    return;
-                }
-            }
-
-            timeElapsed++;
-            if (timeElapsed == Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))) {
-                Bukkit.getOnlinePlayers().forEach(player ->
-                        player.sendMessage("§4§lWarning: AirDrop coming at: " + location.getX() + "X and " + location.getZ() + " Z. "));
-            }
-            if (this.timeElapsed >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 10)), "time_till_airdrop"))) {
-                start = false;
-                sendAirDrop();
-                this.timeElapsed = 0;
-                this.location = getRandomLocation();
-            }
-            if (timeElapsed >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))) {
+      airDropStartChecker();
+            if (getTimeElapsed() >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))) {
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     String keyAsString = "entity.lightning_bolt.impact";
-                    playMusicByKey(keyAsString, location);
-                    EntityLightning lightning = new EntityLightning(EntityTypes.U, ((CraftWorld) location.getWorld()).getHandle());
+                    playMusicByKey(keyAsString, getLocation());
+                    EntityLightning lightning = new EntityLightning(EntityTypes.U, ((CraftWorld) getLocation().getWorld()).getHandle());
 
                     Vec3D vec = new Vec3D(0, 0, 0);
 
                     PacketPlayOutSpawnEntity lightningPacket = new PacketPlayOutSpawnEntity(lightning.getId(), lightning.getUniqueID(),
-                            location.getX(),
-                            location.getY(),
-                            location.getZ(), 0f, 0f, EntityTypes.U, 0, vec);
+                            getLocation().getX(),
+                            getLocation().getY(),
+                            getLocation().getZ(), 0f, 0f, EntityTypes.U, 0, vec);
 
 
                     ((CraftPlayer) onlinePlayer).getHandle().b.sendPacket(lightningPacket);
 
                     ((CraftPlayer) onlinePlayer).getHandle().b.
-                            sendPacket(new PacketPlayOutExplosion(location.getX(),
-                                    location.getY(), location.getZ(), 10,
+                            sendPacket(new PacketPlayOutExplosion(getLocation().getX(),
+                                    getLocation().getY(), getLocation().getZ(), 10,
                                     Collections.emptyList(), new Vec3D(0, 0, 0)));
 
                     ((CraftPlayer) onlinePlayer).getHandle().b.
-                            sendPacket(new PacketPlayOutNamedSoundEffect(new SoundEffect(MinecraftKey.a("ambient.weather.thunder")), SoundCategory.d, location.getX(),
-                                    location.getY(), location.getZ(), 0.00001f, 1f));
+                            sendPacket(new PacketPlayOutNamedSoundEffect(new SoundEffect(MinecraftKey.a("ambient.weather.thunder")), SoundCategory.d, getLocation().getX(),
+                                    getLocation().getY(), getLocation().getZ(), 0.00001f, 1f));
 
                 }
 
@@ -129,50 +106,20 @@ public class AirDropMechanic implements de.crowraw.airdrops.airdrop.AirDropMecha
         Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().b.sendPacket(packet));
     }
 
-    public void sendAirDrop() {
-
-
-        List<ItemStack> itemStacks = new ArrayList<>();
-
-
-        for (int i = 0; i < plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("items").getKeys(false).size(); i++) {
-
-            if (plugin.getConfigUtil().getYamlConfiguration().get("items." + i) == null) {
-                continue;
-            }
-            itemStacks.add(plugin.getConfigUtil().getYamlConfiguration().getItemStack("items." + i));
-        }
-
-        Collections.shuffle(itemStacks);
-        itemStacks = itemStacks.stream().limit(5).collect(Collectors.toList());
-        new AirDrop(location, itemStacks
-                , plugin).spawnAirDrop(antiLag);
-    }
-
-    private Location getRandomLocation() {
-        List<Location> locations = new ArrayList<>();
-        int size = plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("location").getKeys(false).size();
-        for (int i = 0; i < size; i++) {
-            locations.add(plugin.getConfigUtil().getLocationFromId(i));
-
-        }
-        Collections.shuffle(locations);
-        return locations.get(0);
-    }
 
     public void setAntiLag(boolean antiLag) {
-        this.antiLag = antiLag;
+      antiLag(antiLag);
     }
 
     public void setTimeElapsed(int timeElapsed) {
-        this.timeElapsed = timeElapsed;
+        timeElapsed(timeElapsed);
     }
 
     public void setStart(boolean start) {
-        this.start = start;
+        start(start);
     }
 
     public boolean isAntiLag() {
-        return antiLag;
+        return getAntiLag();
     }
 }

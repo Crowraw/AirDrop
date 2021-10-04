@@ -1,7 +1,9 @@
 package de.crowraw.airdrops;
 
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import de.crowraw.airdrops.airdrop.AirDropFactory;
-import de.crowraw.airdrops.airdrop.AirDropMechanic;
+import de.crowraw.airdrops.airdrop.AirDropInterface;
+import de.crowraw.airdrops.listener.ChestListener;
 import de.crowraw.lib.data.ConfigHelper;
 import de.crowraw.airdrops.command.AirDropCommand;
 
@@ -15,18 +17,16 @@ import java.util.List;
 
 public final class AirDrops extends JavaPlugin {
     private final ConfigHelper configUtil = new ConfigHelper("plugins//AirDrop//config.yml");
-    private AirDropMechanic airDropMechanic;
+    private AirDropInterface airDropMechanic;
 
-    private final List<Location> locations = new ArrayList<>();
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         configUtil.saveConfig();
-
+        new ChestListener(this);
         new AirDropCommand(this);
-      airDropMechanic = AirDropFactory.getAirDropMechanic(Bukkit.getVersion(),this);
-
+        airDropMechanic = AirDropFactory.getAirDropMechanic(Bukkit.getVersion(), this);
     }
 
     @Override
@@ -38,11 +38,8 @@ public final class AirDrops extends JavaPlugin {
         return configUtil;
     }
 
-    public List<Location> getLocations() {
-        return locations;
-    }
 
-    public AirDropMechanic getAirDropMechanic() {
+    public AirDropInterface getAirDropMechanic() {
         return airDropMechanic;
     }
 }
