@@ -51,6 +51,7 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
 
             airDropStartChecker();
+
             if (getTimeElapsed() >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))) {
 
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -63,7 +64,6 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
                             sendPacket(new PacketPlayOutExplosion(getLocation().getX(),
                                     getLocation().getY(), getLocation().getZ(), 10,
                                     Collections.emptyList(), new Vec3D(0, 0, 0)));
-
                     onlinePlayer.playSound(getLocation(), "entity.generic.explode", 1f, 1f);
 
 

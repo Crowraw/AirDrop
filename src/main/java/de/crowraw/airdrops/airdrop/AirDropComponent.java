@@ -34,6 +34,7 @@ public abstract class AirDropComponent {
     private int timeElapsed = 0;
     private boolean antiLag;
     private boolean start = false;
+    private int playersRequired;
     private AirDrops plugin;
 
     public AirDropComponent(AirDrops plugin) {
@@ -50,7 +51,11 @@ public abstract class AirDropComponent {
                 .build());
         firework.setFireworkMeta(fireworkMeta);
         fireworkMeta.setPower(20);
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, firework::detonate, 4);
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            firework.detonate();
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, firework::remove, 5);
+        }, 5);
+        this.playersRequired = Integer.parseInt(plugin.getConfigUtil().getStringMessage("40", "playersrequired"));
     }
 
     public Location getRandomLocation(AirDrops plugin) {
@@ -127,10 +132,9 @@ public abstract class AirDropComponent {
 
     public void airDropStartChecker() {
         if (!start) {
-            if (Bukkit.getOnlinePlayers().size() <
-                    Integer.parseInt(plugin.getConfigUtil().getStringMessage("40", "playersrequired"))) {
+            if (Bukkit.getOnlinePlayers().size() < playersRequired)
                 return;
-            }
+
         }
 
         timeElapsed++;

@@ -65,4 +65,7 @@ public void addChestLocation(Location location,AirDrops plugin){
                         "time_till_remove_chest").split("#")[0])));
 }
 
+    public List<AirDropSpecialities> getAirDropSpecialities() {
+        return airDropSpecialities;
+    }
 }

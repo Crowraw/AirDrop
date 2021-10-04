@@ -60,7 +60,8 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
 
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
 
-      airDropStartChecker();
+            airDropStartChecker();
+
             if (getTimeElapsed() >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))) {
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     String keyAsString = "entity.lightning_bolt.impact";
