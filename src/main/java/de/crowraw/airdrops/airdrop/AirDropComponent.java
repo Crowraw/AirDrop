@@ -147,6 +147,10 @@ public abstract class AirDropComponent {
                 new de.crowraw.airdrops.v1_17.entitiy.AirDrop(getLocation(), prepareItems(plugin)
                         , plugin).spawnAirDrop(antiLag);
             }
+            if (Bukkit.getVersion().contains("1.12")) {
+                new de.crowraw.airdrops.v1_12.entitiy.AirDrop(getLocation(), prepareItems(plugin)
+                        , plugin).spawnAirDrop(antiLag);
+            }
             if (Bukkit.getVersion().contains("1.16")) {
                 new de.crowraw.airdrops.v1_16.entitiy.AirDrop(getLocation(), prepareItems(plugin)
                         , plugin).spawnAirDrop(antiLag);

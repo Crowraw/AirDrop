@@ -57,7 +57,7 @@ public class AirDropCommand implements CommandExecutor {
                         success(player);
                         break;
                     case "start":
-                        plugin.getAirDropMechanic().setTimeElapsed(Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))-1);
+                        plugin.getAirDropMechanic().setTimeElapsed(Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare")) - 1);
                         plugin.getAirDropMechanic().setStart(true);
                         success(player);
                         break;
@@ -66,8 +66,7 @@ public class AirDropCommand implements CommandExecutor {
                         player.sendMessage("§aAntiLag is now" + (plugin.getAirDropMechanic().isAntiLag() ? "§2activ" : "§4not active"));
                         break;
                     case "reload":
-
-                       success(player);
+                        success(player);
                         break;
                     default:
                         syntax(player);
