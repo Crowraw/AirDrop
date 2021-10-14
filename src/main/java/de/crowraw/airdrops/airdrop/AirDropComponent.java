@@ -71,10 +71,11 @@ public abstract class AirDropComponent {
             i++;
         }
         Collections.shuffle(locations);
-        if (locations.get(0) == null) {
+        Location location = locations.get(0);
+        if (location == null || location.getWorld() == null) {
             plugin.getLogger().info("The Location is not valid! ID:" + i);
         }
-        return locations.get(0);
+        return location;
     }
 
     public List<ItemStack> prepareItems(AirDrops plugin) {
