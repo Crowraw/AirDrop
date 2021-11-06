@@ -38,7 +38,7 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
         super(plugin);
         this.plugin = plugin;
         if (plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("location") == null) {
-            plugin.getConfigUtil().loadLocation(99, new Location(Bukkit.getWorld("world"), 1, 1, 1));
+            return;
         }
 
         if (plugin.getConfigUtil().getYamlConfiguration().get("items.0") == null) {

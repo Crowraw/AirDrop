@@ -45,10 +45,13 @@ public class AirDropCommand implements CommandExecutor {
 
                 switch (strings[0].toLowerCase()) {
                     case "addlocation":
+                        int size = plugin.getConfigUtil().
+                                getYamlConfiguration().getConfigurationSection("location") == null ? 0 : plugin.getConfigUtil().
+                                getYamlConfiguration().getConfigurationSection("location").getKeys(false).size();
 
                         plugin.getConfigUtil().
-                                getLocationFromId(plugin.getConfigUtil().getYamlConfiguration().
-                                        getConfigurationSection("location").getKeys(false).size() + 1, player.getLocation());
+                                getLocationFromId(
+                                        size + 1, player.getLocation());
                         success(player);
                         break;
                     case "additem":
