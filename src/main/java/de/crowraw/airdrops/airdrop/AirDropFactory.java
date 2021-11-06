@@ -30,6 +30,9 @@ public class AirDropFactory {
         if (version.contains("1.16")) {
             return new de.crowraw.airdrops.v1_16.mechanic.AirDropMechanic(plugin);
         }
+        if (version.contains("1.12")) {
+            return new de.crowraw.airdrops.v1_12.mechanic.AirDropMechanic(plugin);
+        }
         System.out.println("Not supported version!");
         return null;
     }

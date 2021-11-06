@@ -34,6 +34,7 @@ public abstract class AirDropComponent {
     private int timeElapsed = 0;
     private boolean antiLag;
     private boolean start = false;
+    private int playersRequired;
     private AirDrops plugin;
 
     public AirDropComponent(AirDrops plugin) {
@@ -50,7 +51,11 @@ public abstract class AirDropComponent {
                 .build());
         firework.setFireworkMeta(fireworkMeta);
         fireworkMeta.setPower(20);
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, firework::detonate, 4);
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            firework.detonate();
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, firework::remove, 5);
+        }, 5);
+        this.playersRequired = Integer.parseInt(plugin.getConfigUtil().getStringMessage("40", "playersrequired"));
     }
 
     public Location getRandomLocation(AirDrops plugin) {
@@ -66,10 +71,11 @@ public abstract class AirDropComponent {
             i++;
         }
         Collections.shuffle(locations);
-        if (locations.get(0) == null) {
+        Location location = locations.get(0);
+        if (location == null || location.getWorld() == null) {
             plugin.getLogger().info("The Location is not valid! ID:" + i);
         }
-        return locations.get(0);
+        return location;
     }
 
     public List<ItemStack> prepareItems(AirDrops plugin) {
@@ -127,10 +133,9 @@ public abstract class AirDropComponent {
 
     public void airDropStartChecker() {
         if (!start) {
-            if (Bukkit.getOnlinePlayers().size() <
-                    Integer.parseInt(plugin.getConfigUtil().getStringMessage("40", "playersrequired"))) {
+            if (Bukkit.getOnlinePlayers().size() < playersRequired)
                 return;
-            }
+
         }
 
         timeElapsed++;
@@ -145,6 +150,10 @@ public abstract class AirDropComponent {
             }
             if (Bukkit.getVersion().contains("1.17")) {
                 new de.crowraw.airdrops.v1_17.entitiy.AirDrop(getLocation(), prepareItems(plugin)
+                        , plugin).spawnAirDrop(antiLag);
+            }
+            if (Bukkit.getVersion().contains("1.12")) {
+                new de.crowraw.airdrops.v1_12.entitiy.AirDrop(getLocation(), prepareItems(plugin)
                         , plugin).spawnAirDrop(antiLag);
             }
             if (Bukkit.getVersion().contains("1.16")) {

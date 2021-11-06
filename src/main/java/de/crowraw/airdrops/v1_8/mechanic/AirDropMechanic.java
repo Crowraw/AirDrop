@@ -35,7 +35,7 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
         this.plugin = plugin;
 
         if (plugin.getConfigUtil().getYamlConfiguration().getConfigurationSection("location") == null) {
-            plugin.getConfigUtil().loadLocation(99, new Location(Bukkit.getWorld("world"), 1, 1, 1));
+            return;
         }
 
         if (plugin.getConfigUtil().getYamlConfiguration().get("items.0") == null) {
@@ -51,6 +51,7 @@ public class AirDropMechanic extends AirDropComponent implements de.crowraw.aird
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
 
             airDropStartChecker();
+
             if (getTimeElapsed() >= Integer.parseInt(plugin.getConfigUtil().getStringMessage(String.valueOf((60 * 9 + 30)), "time_till_prepare"))) {
 
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {

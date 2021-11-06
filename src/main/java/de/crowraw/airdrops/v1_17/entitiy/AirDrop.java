@@ -50,8 +50,6 @@ public class AirDrop extends AirDropComponent {
             return;
         }
         location.setY(120);
-        location.getChunk().load();
-
         FallingBlock fallingBlock = this.location.getWorld().spawnFallingBlock(this.location, Material.CHEST, (byte) 0);
         fallingBlock.setDropItem(false);
 

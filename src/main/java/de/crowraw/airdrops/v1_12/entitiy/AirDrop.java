@@ -1,4 +1,4 @@
-package de.crowraw.airdrops.v1_16.entitiy;/*
+package de.crowraw.airdrops.v1_12.entitiy;/*
    _____                                      
  / ____|                                     
 | |     _ __ _____      ___ __ __ ___      __
@@ -17,16 +17,13 @@ package de.crowraw.airdrops.v1_16.entitiy;/*
 
 import de.crowraw.airdrops.AirDrops;
 import de.crowraw.airdrops.airdrop.AirDropComponent;
-import de.crowraw.airdrops.v1_16.mechanic.AirDropMechanic;
-
-import net.minecraft.server.v1_16_R3.PacketPlayOutExplosion;
-import net.minecraft.server.v1_16_R3.Vec3D;
-
+import de.crowraw.airdrops.v1_12.mechanic.AirDropMechanic;
+import net.minecraft.server.v1_12_R1.PacketPlayOutExplosion;
+import net.minecraft.server.v1_12_R1.Vec3D;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
-
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -79,7 +76,7 @@ public class AirDrop extends AirDropComponent {
                 }
                 if (!antiLag) {
                     createFireWork(plugin, fallingBlock);
-                    String keyAsString = "entity.dragon_fireball.explode";
+                    String keyAsString = "entity.generic.explode";
                     AirDropMechanic.playMusicByKey(keyAsString, location);
                     Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().playerConnection.
                             sendPacket(new PacketPlayOutExplosion(location.getX(),

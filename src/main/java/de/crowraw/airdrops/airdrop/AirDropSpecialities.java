@@ -101,8 +101,12 @@ public class AirDropSpecialities {
         if (!spawnedHolos) {
             hologram = HologramsAPI.createHologram(plugin, getCenter(getLocation()));
             spawnedHolos = true;
+            loadHoloGramLines();
         }
-        loadHoloGramLines();
+
+        if (Boolean.parseBoolean(plugin.getConfigUtil().getStringMessage("true", "refresh_holo"))) {
+            loadHoloGramLines();
+        }
         return false;
     }
 
@@ -123,10 +127,9 @@ public class AirDropSpecialities {
         return Arrays.stream(inventory.getContents()).filter(Objects::nonNull).noneMatch(itemStack -> itemStack.getType() != Material.AIR);
     }
 
-    private void deleteChest() {
+    public void deleteChest() {
         getLocation().getBlock().setType(Material.AIR);
         hologram.delete();
-
     }
 
     private void loadHoloGramLines() {
